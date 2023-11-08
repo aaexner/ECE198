@@ -1,0 +1,46 @@
+#include <iostream>
+int main();
+int main(){
+const int sensorPin1 = x;  // Analog pin for FSR 1
+const int sensorPin2 = y;  // Analog pin for FSR 2
+const int buzzerPin = z;   // Digital pin for the buzzer
+int weight{}; //varible for user weight
+std::cout<<"Enter weight of user in kg:";
+std::cin>>weight; //take in weight
+const int triggerThreshold = weight+(weight*.2); //user weight
+  while (true){
+    loop();
+  }
+
+void loop() {
+  int sensorValue1 = analogRead(sensorPin1);
+  int sensorValue2 = analogRead(sensorPin2);
+int value{};//this value must be determined through testing and calibration. It is the value needed to convert from the reading given by the force sensor to the weight applied on the shoulder from the backpack in kg
+  int combinedWeight = sensorValue1 + sensorValue2;
+int combined_in_kg=(combinedWeight/value); //converts from newtons to kg
+
+  // Check if the combined weight is more than the user-entered trigger
+  if (combined_in_kg > triggerThreshold) {
+    // Trigger the buzzer until the reading changes
+    while (combinedWeight > triggerThreshold) {
+      tone(buzzerPin, 1000); // Turn the buzzer on
+      sensorValue1 = analogRead(sensorPin1);
+      sensorValue2 = analogRead(sensorPin2);
+      combinedWeight = sensorValue1 + sensorValue2;
+combined_in_kg=(combinedWeight/9.81); //converts from newtons to kg
+    }
+  }
+
+  // Check if the sensors are not within 50% of each other
+  if (sensorValue1 >= (2*sensorValue2) || sensorValue2>= (2&sensorValue1)) {
+    // Trigger the buzzer to pulse on and off every second until reading changes
+    while (sensorValue1 >= (2*sensorValue2) || sensorValue2>= (2&sensorValue1)) {
+      tone(buzzerPin, 1000); // Turn the buzzer on
+      delay(500); // Delay for half a second
+      noTone(buzzerPin); // Turn the buzzer off
+      delay(500); // Delay for half a second
+      sensorValue1 = analogRead(sensorPin1);
+      sensorValue2 = analogRead(sensorPin2);
+    }
+  }
+}
